@@ -3,177 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0e1726" />
-  <meta name="description" content="Minimal interactive digital twin and learning guide for the Waveshare ESP32-S3-POE-ETH-8DI-8DO." />
-  <title>Waveshare Digital Twin</title>
+  <meta name="theme-color" content="#f7f8fa" />
+  <meta name="description" content="An interactive Three.js digital twin and practical guide for the Waveshare ESP32-S3-POE-ETH-8DI-8DO." />
+  <title>Waveshare Digital Twin | Meet the Board</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="#home">
-      <span class="brand-mark">W</span>
-      <span>
-        <strong>Waveshare Digital Twin</strong>
-        <small>ESP32-S3-POE-ETH-8DI-8DO</small>
-      </span>
-    </a>
-
-    <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
-
-    <nav id="main-nav" class="nav">
-      <button class="nav-link active" data-nav="home">Home</button>
-      <button class="nav-link" data-nav="twin">Digital Twin</button>
-      <button class="nav-link" data-nav="guide">Guide</button>
-      <button class="nav-link" data-nav="simulator">Simulator</button>
-      <button class="nav-link" data-nav="reference">Reference</button>
-    </nav>
-  </header>
-
-  <main>
-    <section id="view-home" class="view active">
-      <div class="shell hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">Industrial controller learning site</p>
-          <h1>A cleaner, truer digital twin for the Waveshare 8DI / 8DO controller.</h1>
-          <p class="hero-text">Built as a public-facing learning experience: a simplified interface, a dedicated reading guide, and a 3D board model based on your reference photos.</p>
-          <div class="hero-actions">
-            <button class="btn btn-primary" data-nav="twin">Open digital twin</button>
-            <button class="btn" data-nav="guide">Read guide</button>
-          </div>
-          <ul class="hero-points">
-            <li>3D rotating board on the home page</li>
-            <li>Separate reading tab for setup and lessons</li>
-            <li>Minimal UI with less clutter</li>
-          </ul>
-        </div>
-        <div class="hero-stage card">
-          <div class="card-head">
-            <span>3D board preview</span>
-            <small>Auto-rotating</small>
-          </div>
-          <div id="home-board" class="board-viewer" data-mode="hero"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-twin" class="view">
-      <div class="shell section-head">
-        <div>
-          <p class="eyebrow">Interactive board explorer</p>
-          <h2>Digital Twin</h2>
-          <p class="section-copy">Rotate the board, zoom in, and click a hotspot or a component name to inspect the hardware.</p>
-        </div>
-        <div class="top-actions">
-          <button id="reset-view" class="btn btn-small">Reset view</button>
-          <button id="toggle-spin" class="btn btn-small">Pause spin</button>
-        </div>
-      </div>
-
-      <div class="shell twin-layout">
-        <div class="card twin-stage">
-          <div id="explore-board" class="board-viewer board-viewer-large" data-mode="interactive"></div>
-        </div>
-
-        <aside class="card detail-panel">
-          <p class="eyebrow eyebrow-dark" id="detail-kicker">Component</p>
-          <h3 id="detail-title">ESP32-S3 controller</h3>
-          <p id="detail-description">Select a hotspot on the board to learn more about that part.</p>
-          <div id="detail-tags" class="tag-row"></div>
-          <p id="detail-note" class="detail-note"></p>
-        </aside>
-      </div>
-
-      <div class="shell">
-        <div id="component-pills" class="component-pills"></div>
-      </div>
-    </section>
-
-    <section id="view-guide" class="view">
-      <div class="shell section-head single">
-        <div>
-          <p class="eyebrow">Reading-focused tab</p>
-          <h2>Guide</h2>
-          <p class="section-copy">This tab separates the lesson content from the 3D exploration. The structure is adapted to the learning flow you referenced: explore, wire, run.</p>
-        </div>
-      </div>
-      <div class="shell guide-grid" id="guide-grid"></div>
-    </section>
-
-    <section id="view-simulator" class="view">
-      <div class="shell section-head single">
-        <div>
-          <p class="eyebrow">Browser-only mini lab</p>
-          <h2>Simulator</h2>
-          <p class="section-copy">A light educational simulator for the DI1 → DO1 learning example. This is for concept learning only.</p>
-        </div>
-      </div>
-
-      <div class="shell sim-layout">
-        <div class="card sim-card">
-          <div class="sim-block">
-            <small>INPUT</small>
-            <h3>DI1 push button</h3>
-            <button id="sim-input" class="toggle-btn" aria-pressed="false">OFF</button>
-          </div>
-          <div class="sim-arrow">→</div>
-          <div class="sim-block">
-            <small>OUTPUT</small>
-            <h3>DO1 state</h3>
-            <div id="sim-output" class="output-lamp"></div>
-            <strong id="sim-output-label">OFF</strong>
-          </div>
-          <div class="sim-arrow">→</div>
-          <div class="sim-block">
-            <small>LOAD</small>
-            <h3>Indicator lamp</h3>
-            <div id="sim-lamp" class="lamp"></div>
-          </div>
-        </div>
-        <div class="card sim-note">
-          <p class="eyebrow eyebrow-dark">What this demonstrates</p>
-          <h3>Signal flow</h3>
-          <p id="sim-caption">Toggle DI1 to see the example logic turn DO1 on or off.</p>
-          <ul>
-            <li>Pressing DI1 simulates an input becoming active.</li>
-            <li>The output state mirrors the simple example logic.</li>
-            <li>The lamp is a visual representation of a connected load.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-reference" class="view">
-      <div class="shell section-head single">
-        <div>
-          <p class="eyebrow">Source and support</p>
-          <h2>Reference</h2>
-          <p class="section-copy">Useful links and core specifications for the board.</p>
-        </div>
-      </div>
-      <div class="shell reference-grid">
-        <a class="card ref-card" href="https://docs.waveshare.com/ESP32-S3-POE-ETH-8DI-8DO" target="_blank" rel="noreferrer">
-          <h3>Official Waveshare documentation</h3>
-          <p>Primary hardware documentation and product information.</p>
-        </a>
-        <a class="card ref-card" href="https://nani2905-ap.github.io/esp32-s3-waveshare/learn-esp32-s3/" target="_blank" rel="noreferrer">
-          <h3>Referenced lesson website</h3>
-          <p>The learning-site concept you shared for layout and lesson flow inspiration.</p>
-        </a>
-        <div class="card ref-card">
-          <h3>Board facts</h3>
-          <p>ESP32-S3, Ethernet with PoE support, USB-C, 8 digital inputs, 8 digital outputs, RS485, CAN, Wi-Fi and Bluetooth.</p>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer shell">
-    <p>Custom digital twin concept for the Waveshare ESP32-S3-POE-ETH-8DI-8DO.</p>
-  </footer>
-
   <script type="importmap">
     {
       "imports": {
@@ -182,7 +18,215 @@
       }
     }
   </script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" data-nav="home">
+      <span class="brand-symbol">W</span>
+      <span class="brand-copy"><strong>Waveshare Digital Twin</strong><small>ESP32-S3-POE-ETH-8DI-8DO</small></span>
+    </a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Open navigation" aria-expanded="false">☰</button>
+    <nav class="main-nav" id="main-nav">
+      <button class="nav-link active" data-nav="home">Home</button>
+      <button class="nav-link" data-nav="meet">Meet the Board</button>
+      <button class="nav-link" data-nav="guide">Guide</button>
+      <button class="nav-link" data-nav="lessons">Lessons</button>
+      <button class="nav-link" data-nav="reference">Reference</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section class="view active" id="view-home">
+      <div class="home-layout shell">
+        <div class="home-copy">
+          <p class="eyebrow">Industrial IoT · Interactive learning</p>
+          <h1>Understand the board.<br><span>Build something real.</span></h1>
+          <p class="lead">Explore the Waveshare ESP32-S3-POE-ETH-8DI-8DO, learn its interfaces and follow practical exercises — even before you have the hardware in front of you.</p>
+          <div class="home-actions">
+            <button class="button primary" data-nav="meet">Meet the Board <span>↗</span></button>
+            <button class="button secondary" data-nav="guide">Open the Guide</button>
+          </div>
+          <div class="home-specs">
+            <div><strong>8</strong><span>Digital inputs</span></div>
+            <div><strong>8</strong><span>Digital outputs</span></div>
+            <div><strong>PoE</strong><span>Ethernet</span></div>
+            <div><strong>RS485</strong><span>CAN</span></div>
+          </div>
+        </div>
+        <div class="home-model-card">
+          <div class="model-card-head"><span>ESP32-S3-POE-ETH-8DI-8DO</span><span class="model-live"><i></i> 3D MODEL</span></div>
+          <div class="three-host" id="home-model" data-viewer="home" aria-label="Auto rotating three dimensional model of the Waveshare controller"></div>
+          <div class="model-card-foot"><span>175 × 90 × 40 mm</span><span>Drag to explore</span></div>
+        </div>
+      </div>
+      <div class="home-bottom shell">
+        <div class="bottom-heading"><p class="eyebrow">Start here</p><h2>One board. Three ways to learn.</h2></div>
+        <div class="entry-grid">
+          <button class="entry-card" data-nav="meet"><span class="entry-number">01</span><strong>Meet the Board</strong><p>Explore the physical components in a detailed 3D model.</p><span class="entry-arrow">Explore ↗</span></button>
+          <button class="entry-card" data-nav="guide"><span class="entry-number">02</span><strong>Guide</strong><p>Wire the local I/O, connect the device and learn its network modes.</p><span class="entry-arrow">Start guide ↗</span></button>
+          <button class="entry-card" data-nav="lessons"><span class="entry-number">03</span><strong>Lessons</strong><p>Build practical examples using the board's real interfaces.</p><span class="entry-arrow">View lessons ↗</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEET THE BOARD -->
+    <section class="view" id="view-meet">
+      <div class="shell page-heading">
+        <div><p class="eyebrow">Interactive 3D explorer</p><h1>Meet the Board</h1><p>Choose a component to stop the rotation and move the camera in for a closer look.</p></div>
+        <div class="dimension-note"><strong>175 × 90 × 40 mm</strong><span>Manufacturer's published enclosure dimensions</span></div>
+      </div>
+      <div class="shell meet-layout">
+        <div class="model-stage card">
+          <div class="stage-toolbar"><span class="stage-status"><i></i> 3D INTERACTIVE MODEL</span><div><button class="small-button" id="meet-reset">Reset view</button><button class="small-button" id="meet-spin">Pause spin</button><button class="small-button" id="meet-explode">Show internals</button></div></div>
+          <div class="three-host meet-host" id="meet-model" data-viewer="meet" aria-label="Interactive three dimensional Waveshare ESP32-S3-POE-ETH-8DI-8DO model"></div>
+          <div class="stage-instructions"><span>Drag to orbit</span><span>Scroll to zoom</span><span>Select a hotspot or component</span></div>
+        </div>
+        <aside class="component-panel card">
+          <div class="panel-top"><div><p class="eyebrow">Component index</p><h2>Explore parts</h2></div><span class="part-count">10 PARTS</span></div>
+          <div class="component-groups" id="component-list"></div>
+          <div class="component-detail" id="component-detail" aria-live="polite">
+            <p class="eyebrow" id="detail-kicker">MAIN CONTROLLER</p>
+            <h3 id="detail-title">ESP32-S3 module</h3>
+            <p id="detail-description">Select a component to view its function and connection notes.</p>
+            <div class="detail-tags" id="detail-tags"></div>
+            <div class="detail-note" id="detail-note"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- GUIDE -->
+    <section class="view" id="view-guide">
+      <div class="shell page-heading guide-heading">
+        <div><p class="eyebrow">From wiring to connectivity</p><h1>Guide</h1><p>A practical walkthrough for setting up and using the controller. The 3D board stays with you as you work through each section.</p></div>
+        <div class="guide-model-card card"><div class="guide-model-title">Board reference</div><div class="three-host guide-host" id="guide-model" data-viewer="guide" aria-label="Small three dimensional model of the Waveshare controller"></div></div>
+      </div>
+
+      <div class="shell guide-tabs" role="tablist" aria-label="Guide sections">
+        <button class="guide-tab active" data-guide="local">Local I/O Control</button>
+        <button class="guide-tab" data-guide="ap">Wi-Fi Access Point</button>
+        <button class="guide-tab" data-guide="sta">Wi-Fi Station</button>
+        <button class="guide-tab" data-guide="mqtt">MQTT & Node-RED</button>
+      </div>
+
+      <div class="shell guide-content">
+        <!-- LOCAL I/O -->
+        <div class="guide-pane active" id="guide-local">
+          <div class="guide-intro-row"><div><p class="eyebrow">Practical 01</p><h2>Local I/O Control</h2><p>Connect a push button to DI1 and an indicator lamp to DO1. Then install the lesson firmware and observe how the input controls the output.</p></div><div class="lesson-chip">DI1 → DO1</div></div>
+          <div class="local-grid">
+            <div class="card wiring-card">
+              <div class="card-heading"><div><p class="eyebrow">Wiring reference</p><h3>Push button + tower lamp</h3></div><span class="step-count">01 / 03</span></div>
+              <div class="wiring-diagram">
+                <svg viewBox="0 0 760 390" role="img" aria-label="Wiring diagram showing a 24 volt supply, push button connected to DI1, and lamp connected to DO1">
+                  <defs>
+                    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="none" stroke="#df4b42" stroke-width="1.5"/></marker>
+                    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="none" stroke="#387bd6" stroke-width="1.5"/></marker>
+                    <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="none" stroke="#1d9a65" stroke-width="1.5"/></marker>
+                  </defs>
+                  <rect x="18" y="20" width="724" height="350" rx="18" fill="#fbfcfe" stroke="#e4eaf1"/>
+                  <g transform="translate(48 66)"><rect width="130" height="92" rx="12" fill="#fff" stroke="#dbe3ec"/><text x="65" y="24" text-anchor="middle" class="svg-title">24 V SUPPLY</text><rect x="18" y="42" width="42" height="27" rx="6" fill="#fce8e6"/><text x="39" y="60" text-anchor="middle" class="svg-red">+24V</text><rect x="70" y="42" width="42" height="27" rx="6" fill="#e9eef5"/><text x="91" y="60" text-anchor="middle" class="svg-dark">0V</text></g>
+                  <g transform="translate(245 65)"><rect width="145" height="100" rx="12" fill="#fff" stroke="#dbe3ec"/><text x="72" y="24" text-anchor="middle" class="svg-title">PUSH BUTTON</text><circle cx="72" cy="63" r="24" fill="#e8f8ef" stroke="#239c60" stroke-width="4"/><circle cx="72" cy="57" r="15" fill="#29b56e"/><text x="72" y="94" text-anchor="middle" class="svg-muted">T3 · T4</text></g>
+                  <g transform="translate(245 228)"><rect width="145" height="100" rx="12" fill="#fff" stroke="#dbe3ec"/><text x="72" y="24" text-anchor="middle" class="svg-title">24V INDICATOR</text><path d="M72 42 C51 42 47 66 72 78 C97 66 93 42 72 42Z" fill="#ffe08a" stroke="#d39b25" stroke-width="3"/><path d="M60 79h24v8H60z" fill="#8c99a8"/><text x="72" y="98" text-anchor="middle" class="svg-muted">GREY · YELLOW</text></g>
+                  <g transform="translate(520 78)"><rect width="185" height="235" rx="14" fill="#171d25"/><rect x="12" y="12" width="161" height="211" rx="8" fill="#202b37" stroke="#405064"/><text x="92" y="40" text-anchor="middle" fill="#f3f7fb" class="svg-title">WAVESHARE</text><text x="92" y="58" text-anchor="middle" fill="#b8c9d8" class="svg-small">8DI / 8DO</text><rect x="24" y="78" width="137" height="42" rx="6" fill="#1d9a65"/><text x="92" y="104" text-anchor="middle" fill="#fff" class="svg-label">DI1 – DI8</text><rect x="24" y="132" width="137" height="42" rx="6" fill="#208c59"/><text x="92" y="158" text-anchor="middle" fill="#fff" class="svg-label">DO1 – DO8</text><text x="92" y="202" text-anchor="middle" fill="#aebdcc" class="svg-small">DIGITAL I/O</text></g>
+                  <path d="M108 109 H210 V111 H245" fill="none" stroke="#df4b42" stroke-width="4" marker-end="url(#arrow-red)"/><text x="186" y="96" class="svg-red">+24V → T3</text>
+                  <path d="M390 124 H450 V158 H544" fill="none" stroke="#1d9a65" stroke-width="4" marker-end="url(#arrow-green)"/><text x="431" y="145" class="svg-green">T4 → DI1</text>
+                  <path d="M108 135 V190 H220 V282 H245" fill="none" stroke="#387bd6" stroke-width="4" marker-end="url(#arrow-blue)"/><text x="120" y="182" class="svg-blue">0V → DI GND</text>
+                  <path d="M390 278 H455 V153 H544" fill="none" stroke="#e39a22" stroke-width="4" marker-end="url(#arrow-red)"/><text x="421" y="267" class="svg-orange">DO1 → Yellow</text>
+                  <path d="M108 158 V345 H465 V290 H544" fill="none" stroke="#387bd6" stroke-width="4" marker-end="url(#arrow-blue)"/><text x="300" y="339" class="svg-blue">0V → DO GND</text>
+                  <text x="34" y="355" class="svg-muted">Illustrative wiring path — verify terminal numbering against the board manual before connecting.</text>
+                </svg>
+              </div>
+              <div class="wire-legend"><span><i class="wire-dot red"></i> +24 V</span><span><i class="wire-dot green"></i> DI signal</span><span><i class="wire-dot orange"></i> DO output</span><span><i class="wire-dot blue"></i> 0 V / GND</span></div>
+              <div class="wiring-steps">
+                <div><b>1</b><p><strong>Digital input</strong><br>Push button T3 → +24 V. T4 → DI1. Supply 0 V → DI GND.</p></div>
+                <div><b>2</b><p><strong>Digital output</strong><br>Lamp grey → +24 V. Lamp yellow → DO1. Supply 0 V → DO GND.</p></div>
+                <div><b>3</b><p><strong>Verify</strong><br>Press the button: DI1 becomes ON and the program switches DO1 ON.</p></div>
+              </div><div class="info-callout local-io-note">Your integration slides use <code>MAIN_WIFI_AP</code> as the example project because it already contains the board libraries. Wi-Fi itself is not required for the local I/O exercise.</div>
+            </div>
+
+            <div class="card hardware-card">
+              <div class="card-heading"><div><p class="eyebrow">Browser connection</p><h3>Connect & run</h3></div><span class="connection-state" id="connection-state"><i></i> DEMO MODE</span></div>
+              <p class="hardware-intro">The public website can connect to the board over USB serial in a supported browser. Live control requires a matching firmware build on the controller.</p>
+              <div class="connection-actions"><button class="button primary" id="usb-connect">Connect USB</button><button class="button secondary" id="usb-disconnect" disabled>Disconnect</button></div>
+              <p class="browser-note" id="usb-note">Use Chrome or Edge on a computer over HTTPS. Connect the board using its USB-C data port.</p>
+              <div class="firmware-box">
+                <div><strong>Firmware installer</strong><span class="firmware-status">Firmware package required</span></div>
+                <p>To flash the board directly from this website, we need to build and verify a merged firmware image for this exact board. The browser flasher will be enabled once the official demo package and its libraries are available.</p>
+                <button class="button secondary firmware-button" disabled>Flash lesson firmware · package pending</button>
+                <a href="https://docs.waveshare.com/ESP32-S3-POE-ETH-8DI-8DO/Firmware-Flashing" target="_blank" rel="noreferrer">Waveshare firmware flashing notes ↗</a>
+              </div>
+              <div class="serial-console"><div class="console-head"><span></span><span></span><span></span><b>SERIAL MONITOR</b><small id="serial-status">DISCONNECTED</small></div><pre id="serial-log">Waiting for USB connection…</pre></div>
+            </div>
+          </div>
+
+          <div class="card io-card">
+            <div class="card-heading io-heading"><div><p class="eyebrow">I/O monitor and control</p><h3>Digital channels</h3><p>Demo mode lets you explore the interface. In hardware mode, inputs are read from the board and outputs are commanded from the website.</p></div><div class="mode-switch"><button class="mode-button active" data-mode="demo">Demo</button><button class="mode-button" data-mode="hardware" id="hardware-mode">Hardware</button></div></div>
+            <div class="io-columns">
+              <div><div class="io-column-title"><strong>Digital inputs</strong><span>DI1 – DI8</span><small>Field signals · read-only on real hardware</small></div><div class="io-grid" id="di-grid"></div></div>
+              <div><div class="io-column-title"><strong>Digital outputs</strong><span>DO1 – DO8</span><small>Transistor outputs · browser command in hardware mode</small></div><div class="io-grid" id="do-grid"></div></div>
+            </div>
+            <div class="io-footnote"><strong>Important:</strong> A website cannot physically switch a digital input ON. DI status changes when a real switch or sensor changes state. In Demo mode, the DI controls are virtual teaching controls.</div>
+          </div>
+        </div>
+
+        <!-- AP -->
+        <div class="guide-pane" id="guide-ap">
+          <div class="guide-intro-row"><div><p class="eyebrow">Network mode 01</p><h2>Wi-Fi Access Point</h2><p>In AP mode, the Waveshare board creates its own Wi-Fi network. Your laptop or phone joins that network directly.</p></div><div class="mode-illustration">BOARD <span>→</span> LAPTOP</div></div>
+          <div class="network-explain-grid">
+            <div class="card network-card"><p class="eyebrow">How it works</p><h3>The board becomes the hotspot</h3><div class="network-flow"><div class="network-node board-node">Waveshare<br><small>Wi-Fi AP</small></div><div class="network-arrow">→</div><div class="network-node laptop-node">Laptop / Phone<br><small>Connected to board</small></div></div><p>No office router is required for this direct connection. The board hosts a local web dashboard that you open from the connected device.</p></div>
+            <div class="card network-card"><p class="eyebrow">Steps from your integration guide</p><ol class="clean-steps"><li>Flash the AP firmware to the board.</li><li>Set the Wi-Fi SSID and password in the firmware configuration. The password in your guide must be at least 8 characters.</li><li>Connect your laptop to the ESP32 Wi-Fi network.</li><li>Open <code>http://192.168.4.6</code> in your browser.</li></ol><div class="info-callout">The address above is the example shown in your PowerPoint. It can be changed in the firmware configuration.</div></div>
+          </div>
+          <div class="card compare-card"><strong>When should I use AP mode?</strong><p>Use it for a quick one-to-one demonstration, first-time setup or a lab where you want to connect directly to the board without configuring the office network.</p></div>
+        </div>
+
+        <!-- STA -->
+        <div class="guide-pane" id="guide-sta">
+          <div class="guide-intro-row"><div><p class="eyebrow">Network mode 02</p><h2>Wi-Fi Station</h2><p>In STA mode, the board joins an existing Wi-Fi network, just like a laptop or phone.</p></div><div class="mode-illustration">BOARD <span>↔</span> ROUTER</div></div>
+          <div class="network-explain-grid">
+            <div class="card network-card"><p class="eyebrow">How it works</p><h3>Everything joins the same network</h3><div class="network-flow three"><div class="network-node board-node">Waveshare<br><small>Wi-Fi STA</small></div><div class="network-arrow">↔</div><div class="network-node router-node">Wi-Fi Router<br><small>2.4 GHz</small></div><div class="network-arrow">↔</div><div class="network-node laptop-node">Laptop<br><small>Same LAN</small></div></div><p>The router assigns the board an IP address. Your laptop opens the board dashboard using that address.</p></div>
+            <div class="card network-card"><p class="eyebrow">Steps from your integration guide</p><ol class="clean-steps"><li>Flash the STA firmware.</li><li>Configure the 2.4 GHz Wi-Fi SSID and password.</li><li>Connect your laptop to the same Wi-Fi network.</li><li>Read the board's IP address from its serial output and open it in a browser.</li></ol><div class="info-callout">The address 192.168.6.70 in your slides is an example, not a guaranteed address.</div></div>
+          </div>
+          <div class="card compare-card"><strong>When should I use STA mode?</strong><p>Use it when the board needs to be part of an existing lab or office network, where it can communicate with PCs, dashboards, brokers and other devices.</p></div>
+        </div>
+
+        <!-- MQTT -->
+        <div class="guide-pane" id="guide-mqtt">
+          <div class="guide-intro-row"><div><p class="eyebrow">Network mode 03</p><h2>MQTT & Node-RED</h2><p>MQTT is a messaging system. It lets the Waveshare board and a dashboard exchange information through a broker.</p></div><div class="mode-illustration">PUBLISH <span>↔</span> SUBSCRIBE</div></div>
+          <div class="card mqtt-flow-card"><div class="mqtt-flow"><div class="mqtt-node">Waveshare board<small>Publishes DI states<br>Subscribes to DO commands</small></div><div class="mqtt-arrow">→</div><div class="mqtt-node broker"><strong>MQTT Broker</strong><small>Message middleman<br>Aedes / Mosquitto</small></div><div class="mqtt-arrow">→</div><div class="mqtt-node dashboard"><strong>Node-RED</strong><small>Dashboard, logic<br>and control buttons</small></div></div></div>
+          <div class="network-explain-grid">
+            <div class="card network-card"><p class="eyebrow">Simple explanation</p><h3>Think of the broker as a post office</h3><p>The board sends a message such as “DI1 is ON” to the broker. Node-RED subscribes to that topic and receives it. When you press a Node-RED button, it publishes a command such as “DO1 ON”; the board receives that command and changes the output.</p><p>Publish means send a message. Subscribe means listen for messages on a topic.</p></div>
+            <div class="card network-card"><p class="eyebrow">Your PowerPoint setup</p><h3>Local Aedes broker</h3><ol class="clean-steps"><li>Run Node-RED on your PC and add the Aedes broker node.</li><li>Set the broker port to <code>1883</code> and deploy the flow.</li><li>Configure the board with your PC's IPv4 address — not <code>localhost</code>.</li><li>Use <code>localhost</code> inside Node-RED when it connects to the broker running on that same PC.</li></ol><div class="info-callout">Both the board and the PC must be on the same network for this local-broker example.</div></div>
+          </div>
+          <div class="card compare-card"><strong>My recommendation for this public website</strong><p>Start with USB serial for the first Local I/O exercise. Add MQTT as an advanced network lesson. If the public website will control a board over the internet, use a broker with secure WebSocket (WSS), user authentication and per-device topics. Do not put private broker credentials in public JavaScript.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LESSONS -->
+    <section class="view" id="view-lessons">
+      <div class="shell page-heading"><div><p class="eyebrow">Interactive learning path</p><h1>Lessons</h1><p>Lessons 2–6 from your reference concept, adapted to the Waveshare controller's industrial I/O and onboard features.</p></div><div class="lesson-count">05 <span>LESSONS</span></div></div>
+      <div class="shell lessons-layout">
+        <aside class="lesson-index card" id="lesson-index"></aside>
+        <article class="lesson-view card" id="lesson-view"></article>
+      </div>
+    </section>
+
+    <!-- REFERENCE -->
+    <section class="view" id="view-reference">
+      <div class="shell page-heading"><div><p class="eyebrow">Documentation & sources</p><h1>Reference</h1><p>Manufacturer documentation and the learning resources used to shape this website.</p></div></div>
+      <div class="shell reference-list">
+        <a class="reference-item card" href="https://docs.waveshare.com/ESP32-S3-POE-ETH-8DI-8DO" target="_blank" rel="noreferrer"><span class="reference-icon">↗</span><div><strong>Waveshare official product documentation</strong><p>Hardware features, interface details, GPIO mapping and specifications.</p></div></a>
+        <a class="reference-item card" href="https://docs.waveshare.com/ESP32-S3-POE-ETH-8DI-8DO/Resources-And-Documents" target="_blank" rel="noreferrer"><span class="reference-icon">↗</span><div><strong>Waveshare demo package</strong><p>Official example code, libraries and firmware resources.</p></div></a>
+        <a class="reference-item card" href="https://docs.waveshare.com/ESP32-S3-POE-ETH-8DI-8DO/Firmware-Flashing" target="_blank" rel="noreferrer"><span class="reference-icon">↗</span><div><strong>Firmware flashing guide</strong><p>Waveshare's current notes for flashing the factory test firmware.</p></div></a>
+        <a class="reference-item card" href="https://nani2905-ap.github.io/esp32-s3-waveshare/learn-esp32-s3/" target="_blank" rel="noreferrer"><span class="reference-icon">↗</span><div><strong>Reference learning website</strong><p>Original interactive lesson concept. Lessons 2–6 are adapted here for the 8DI/8DO hardware.</p></div></a>
+        <div class="card reference-caveat"><strong>Hardware note</strong><p>This is an educational representation. The board's DO channels are optocoupler-isolated transistor outputs, not relay contacts. Confirm wiring, load ratings and supply requirements against the official documentation before connecting real equipment.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer shell"><span>Waveshare ESP32-S3-POE-ETH-8DI-8DO</span><span>Educational digital twin · Built for learning</span></footer>
   <script type="module" src="board3d.js"></script>
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
