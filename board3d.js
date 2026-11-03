@@ -1,5 +1,5 @@
-import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const HOTSPOTS = {
   mcu: { label: 'ESP32-S3', position: [0.2, 1.1, 0.0] },
@@ -68,7 +68,7 @@ function createBoardModel() {
   const rightMat = new THREE.MeshStandardMaterial({ color: '#ffffff', map: sideTexMirror, roughness: 0.72, metalness: 0.06 });
 
   const bodyGeo = new THREE.BoxGeometry(7.0, 1.8, 4.05);
-  const body = new THREE.Mesh(bodyGeo, [rightMat, leftMat, topMat, black, backMat, frontMat]);
+  const body = new THREE.Mesh(bodyGeo, [rightMat, leftMat, topMat, black, frontMat, backMat]);
   body.castShadow = true;
   body.receiveShadow = true;
   body.position.y = 0.9;
@@ -138,7 +138,9 @@ function addHotspots(scene, model) {
 
 function initViewer(host) {
   const mode = host.dataset.mode || 'hero';
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  let renderer;
+  try {
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(host.clientWidth, host.clientHeight, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -300,6 +302,13 @@ function initViewer(host) {
   animate();
 
   viewers.push({ host, renderer, controls, camera, model, setActive });
+  } catch (error) {
+    console.error('Waveshare 3D viewer failed to initialize:', error);
+    const notice = document.createElement('div');
+    notice.style.cssText = 'position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:#667085;font:14px Inter,Arial,sans-serif;background:#f7f9fc;';
+    notice.textContent = 'The 3D model could not load. Check that the assets folder is uploaded and that this page can access the Three.js CDN.';
+    host.appendChild(notice);
+  }
 }
 
 document.querySelectorAll('.board-viewer').forEach(initViewer);
