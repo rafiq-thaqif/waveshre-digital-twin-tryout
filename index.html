@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0e1726" />
+  <meta name="description" content="Minimal interactive digital twin and learning guide for the Waveshare ESP32-S3-POE-ETH-8DI-8DO." />
+  <title>Waveshare Digital Twin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home">
+      <span class="brand-mark">W</span>
+      <span>
+        <strong>Waveshare Digital Twin</strong>
+        <small>ESP32-S3-POE-ETH-8DI-8DO</small>
+      </span>
+    </a>
+
+    <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
+    <nav id="main-nav" class="nav">
+      <button class="nav-link active" data-nav="home">Home</button>
+      <button class="nav-link" data-nav="twin">Digital Twin</button>
+      <button class="nav-link" data-nav="guide">Guide</button>
+      <button class="nav-link" data-nav="simulator">Simulator</button>
+      <button class="nav-link" data-nav="reference">Reference</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="view-home" class="view active">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Industrial controller learning site</p>
+          <h1>A cleaner, truer digital twin for the Waveshare 8DI / 8DO controller.</h1>
+          <p class="hero-text">Built as a public-facing learning experience: a simplified interface, a dedicated reading guide, and a 3D board model based on your reference photos.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" data-nav="twin">Open digital twin</button>
+            <button class="btn" data-nav="guide">Read guide</button>
+          </div>
+          <ul class="hero-points">
+            <li>3D rotating board on the home page</li>
+            <li>Separate reading tab for setup and lessons</li>
+            <li>Minimal UI with less clutter</li>
+          </ul>
+        </div>
+        <div class="hero-stage card">
+          <div class="card-head">
+            <span>3D board preview</span>
+            <small>Auto-rotating</small>
+          </div>
+          <div id="home-board" class="board-viewer" data-mode="hero"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-twin" class="view">
+      <div class="shell section-head">
+        <div>
+          <p class="eyebrow">Interactive board explorer</p>
+          <h2>Digital Twin</h2>
+          <p class="section-copy">Rotate the board, zoom in, and click a hotspot or a component name to inspect the hardware.</p>
+        </div>
+        <div class="top-actions">
+          <button id="reset-view" class="btn btn-small">Reset view</button>
+          <button id="toggle-spin" class="btn btn-small">Pause spin</button>
+        </div>
+      </div>
+
+      <div class="shell twin-layout">
+        <div class="card twin-stage">
+          <div id="explore-board" class="board-viewer board-viewer-large" data-mode="interactive"></div>
+        </div>
+
+        <aside class="card detail-panel">
+          <p class="eyebrow eyebrow-dark" id="detail-kicker">Component</p>
+          <h3 id="detail-title">ESP32-S3 controller</h3>
+          <p id="detail-description">Select a hotspot on the board to learn more about that part.</p>
+          <div id="detail-tags" class="tag-row"></div>
+          <p id="detail-note" class="detail-note"></p>
+        </aside>
+      </div>
+
+      <div class="shell">
+        <div id="component-pills" class="component-pills"></div>
+      </div>
+    </section>
+
+    <section id="view-guide" class="view">
+      <div class="shell section-head single">
+        <div>
+          <p class="eyebrow">Reading-focused tab</p>
+          <h2>Guide</h2>
+          <p class="section-copy">This tab separates the lesson content from the 3D exploration. The structure is adapted to the learning flow you referenced: explore, wire, run.</p>
+        </div>
+      </div>
+      <div class="shell guide-grid" id="guide-grid"></div>
+    </section>
+
+    <section id="view-simulator" class="view">
+      <div class="shell section-head single">
+        <div>
+          <p class="eyebrow">Browser-only mini lab</p>
+          <h2>Simulator</h2>
+          <p class="section-copy">A light educational simulator for the DI1 → DO1 learning example. This is for concept learning only.</p>
+        </div>
+      </div>
+
+      <div class="shell sim-layout">
+        <div class="card sim-card">
+          <div class="sim-block">
+            <small>INPUT</small>
+            <h3>DI1 push button</h3>
+            <button id="sim-input" class="toggle-btn" aria-pressed="false">OFF</button>
+          </div>
+          <div class="sim-arrow">→</div>
+          <div class="sim-block">
+            <small>OUTPUT</small>
+            <h3>DO1 state</h3>
+            <div id="sim-output" class="output-lamp"></div>
+            <strong id="sim-output-label">OFF</strong>
+          </div>
+          <div class="sim-arrow">→</div>
+          <div class="sim-block">
+            <small>LOAD</small>
+            <h3>Indicator lamp</h3>
+            <div id="sim-lamp" class="lamp"></div>
+          </div>
+        </div>
+        <div class="card sim-note">
+          <p class="eyebrow eyebrow-dark">What this demonstrates</p>
+          <h3>Signal flow</h3>
+          <p id="sim-caption">Toggle DI1 to see the example logic turn DO1 on or off.</p>
+          <ul>
+            <li>Pressing DI1 simulates an input becoming active.</li>
+            <li>The output state mirrors the simple example logic.</li>
+            <li>The lamp is a visual representation of a connected load.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-reference" class="view">
+      <div class="shell section-head single">
+        <div>
+          <p class="eyebrow">Source and support</p>
+          <h2>Reference</h2>
+          <p class="section-copy">Useful links and core specifications for the board.</p>
+        </div>
+      </div>
+      <div class="shell reference-grid">
+        <a class="card ref-card" href="https://docs.waveshare.com/ESP32-S3-POE-ETH-8DI-8DO" target="_blank" rel="noreferrer">
+          <h3>Official Waveshare documentation</h3>
+          <p>Primary hardware documentation and product information.</p>
+        </a>
+        <a class="card ref-card" href="https://nani2905-ap.github.io/esp32-s3-waveshare/learn-esp32-s3/" target="_blank" rel="noreferrer">
+          <h3>Referenced lesson website</h3>
+          <p>The learning-site concept you shared for layout and lesson flow inspiration.</p>
+        </a>
+        <div class="card ref-card">
+          <h3>Board facts</h3>
+          <p>ESP32-S3, Ethernet with PoE support, USB-C, 8 digital inputs, 8 digital outputs, RS485, CAN, Wi-Fi and Bluetooth.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <p>Custom digital twin concept for the Waveshare ESP32-S3-POE-ETH-8DI-8DO.</p>
+  </footer>
+
+  <script type="module" src="board3d.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
