@@ -22,43 +22,7 @@
     ['Power', ['power']]
   ];
 
-  const lessons = [
-    {
-      id:2, title:'Flash two LEDs', subtitle:'Use two outputs in sequence', original:'Flash two LEDs',
-      intro:'Make two indicator lights take turns. On this industrial controller, the closest practical equivalent is to use DO1 and DO2 to control two correctly rated 24 V indicator lamps.',
-      concept:'A program can switch multiple outputs in a timed sequence. The board’s DO channels are sinking transistor outputs, so use suitable industrial indicator lamps or a correctly designed driver circuit — not bare LEDs connected directly to the terminals.',
-      steps:['Wire one compatible indicator lamp to DO1 and a second to DO2 using the appropriate supply and DO GND reference.','Install the lesson firmware using the browser flasher once the verified firmware package is available.','Run the sequence and observe DO1 and DO2 turn on alternately.'],
-      note:'Adaptation: the original ESP32 lesson uses two LEDs on GPIO pins. This board exposes isolated industrial DO channels instead.', demo:'leds'
-    },
-    {
-      id:3, title:'Guard the fridge', subtitle:'Detect a door opening with DI1', original:'Guard the fridge',
-      intro:'A reed switch detects whether a door is open or closed. Wire it as a dry-contact input to DI1, then use the program to trigger an indicator or alarm output.',
-      concept:'A reed switch is a magnetic contact. When the magnet moves away, the contact changes state. The controller reads that change through its optocoupler-isolated digital input.',
-      steps:['Connect the reed switch to the DI1 input circuit using the board’s supported input wiring method.','Read DI1 in the firmware and decide what should count as an open door.','Use DO1 to activate a suitable warning lamp, or use the onboard buzzer for an alert.'],
-      note:'Adaptation: the original lesson demonstrates a reed switch on a general-purpose ESP32 GPIO. Here it is connected to the industrial DI terminal; follow the Waveshare input wiring requirements.', demo:'reed'
-    },
-    {
-      id:4, title:'Use Wi-Fi', subtitle:'Open a control page from a browser', original:'Use Wi-Fi',
-      intro:'Give the controller network access and use a browser page to view input states or send output commands. This is where the AP and STA modes become useful.',
-      concept:'In Access Point mode, the board creates its own Wi-Fi network. In Station mode, the board joins an existing 2.4 GHz network. Both can support a local web interface, depending on the firmware.',
-      steps:['Choose AP for a direct laptop-to-board connection, or STA to join the lab router.','Configure the network details in the lesson firmware.','Open the board’s web interface and use the page to monitor DI states and control DO outputs.'],
-      note:'The reference lesson uses a tiny /toggle web endpoint. For this controller, the website should control DO1–DO8 and display the actual DI1–DI8 values.', demo:'wifi'
-    },
-    {
-      id:5, title:'Sound a siren', subtitle:'Use the onboard buzzer', original:'Sound a siren',
-      intro:'Create an audible alert using the buzzer already fitted inside the Waveshare enclosure. The buzzer is a board feature, so this exercise does not need an external speaker.',
-      concept:'A buzzer can be driven with a repeating on/off pattern or a tone sequence. The Waveshare interface table identifies GPIO46 as the buzzer control pin.',
-      steps:['Use the board-specific buzzer function from the official demo package.','Create a short repeating alert pattern in firmware.','Trigger the siren from an input event, a web command or a lesson button.'],
-      note:'The actual buzzer behaviour and driver calls must be taken from the official demo package; the browser preview below only illustrates the timing.', demo:'buzzer'
-    },
-    {
-      id:6, title:'Build a mini piano', subtitle:'Eight inputs, eight notes', original:'Build a mini piano',
-      intro:'Turn eight push buttons into a simple eight-note controller. Each button is wired to one of the isolated digital inputs; the onboard buzzer plays a different tone for each input.',
-      concept:'The original ESP32 mini-piano lesson uses capacitive-touch GPIOs. Those touch pins are not the user-facing field terminals on this industrial board, so this adaptation uses DI1–DI8 instead.',
-      steps:['Wire eight momentary push buttons to DI1–DI8 using the supported input circuit.','Map each input channel to a different note in the firmware.','Press the buttons and use the onboard buzzer to play a simple melody.'],
-      note:'Adaptation: this uses external dry-contact buttons and the onboard buzzer, rather than direct capacitive-touch pads.', demo:'piano'
-    }
-  ];
+  // Lesson content is loaded after the source Lessons 2–6 are confirmed.
 
   // Navigation
   const viewNames = ['home','meet','guide','lessons','reference'];
@@ -111,6 +75,28 @@
     window.dispatchEvent(new CustomEvent('board:resize'));
   }));
 
+  // Two paths through the Guide: browser-only simulation or physical hardware.
+  let guideMode = 'virtual';
+  function setGuideMode(mode) {
+    guideMode = mode === 'hardware' ? 'hardware' : 'virtual';
+    $('#view-guide').dataset.mode = guideMode;
+    $$('.guide-mode-button').forEach(button => button.classList.toggle('active', button.dataset.guideMode === guideMode));
+    $$('.virtual-mode-panel').forEach(panel => { panel.hidden = guideMode !== 'virtual'; });
+    $$('.hardware-mode-panel').forEach(panel => { panel.hidden = guideMode !== 'hardware'; });
+    ioMode = guideMode === 'virtual' ? 'demo' : 'hardware';
+    if (guideMode === 'hardware' && !serialPort) {
+      $('#connection-state').classList.remove('connected');
+      $('#connection-state').innerHTML = '<i></i> HARDWARE NOT CONNECTED';
+      $('#usb-note').textContent = 'Connect the physical board over USB-C. Live I/O requires the companion web-bridge firmware; the browser firmware installer remains disabled until that build is verified.';
+    } else if (guideMode === 'virtual') {
+      $('#connection-state').classList.remove('connected');
+      $('#connection-state').innerHTML = '<i></i> VIRTUAL MODE';
+    }
+    renderIO();
+    window.dispatchEvent(new CustomEvent('board:resize'));
+  }
+  $$('.guide-mode-button').forEach(button => button.addEventListener('click', () => setGuideMode(button.dataset.guideMode)));
+
   // I/O demo and optional USB serial bridge.
   let di = Array(8).fill(false);
   let dout = Array(8).fill(false);
@@ -130,13 +116,21 @@
     log.scrollTop = log.scrollHeight;
   }
   function renderIO() {
-    $('#di-grid').innerHTML = di.map((on,i) => `<div class="io-channel ${on?'on':''}"><i class="state-dot"></i><strong>DI${i+1}</strong><small>${on?'ACTIVE':'INACTIVE'}</small><button data-di="${i}" ${ioMode==='hardware'?'disabled':''}>${ioMode==='hardware'?'READ ONLY':(on?'Set OFF':'Set ON')}</button></div>`).join('');
-    $('#do-grid').innerHTML = dout.map((on,i) => `<div class="io-channel ${on?'on':''}"><i class="state-dot"></i><strong>DO${i+1}</strong><small>${on?'ON':'OFF'}</small><button data-do="${i}" ${ioMode==='hardware'&&!serialPort?'disabled':''}>${on?'Switch OFF':'Switch ON'}</button></div>`).join('');
-    $$('.mode-button').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === ioMode));
+    const hardware = guideMode === 'hardware';
+    $('#di-grid').innerHTML = di.map((on,i) => `<div class="io-channel ${on?'on':''}"><i class="state-dot"></i><strong>DI${i+1}</strong><small>${on?'ACTIVE':'INACTIVE'}</small><button data-di="${i}" ${hardware?'disabled':''}>${hardware?'READ ONLY':(on?'Set OFF':'Set ON')}</button></div>`).join('');
+    $('#do-grid').innerHTML = dout.map((on,i) => `<div class="io-channel ${on?'on':''}"><i class="state-dot"></i><strong>DO${i+1}</strong><small>${on?'ON':'OFF'}</small><button data-do="${i}" ${hardware&&!serialPort?'disabled':''}>${on?'Switch OFF':'Switch ON'}</button></div>`).join('');
+    $('#io-mode-label').textContent = hardware ? (serialPort ? 'HARDWARE CONNECTED' : 'HARDWARE · CONNECT BOARD') : 'VIRTUAL MODE';
+    window.dispatchEvent(new CustomEvent('localio:state', { detail: { di1:di[0], do1:dout[0] } }));
+    $('#virtual-button-toggle').setAttribute('aria-pressed', String(di[0]));
+    $('#virtual-button-toggle').textContent = di[0] ? 'Release virtual button' : 'Press virtual button';
+    $('#virtual-di-state').textContent = di[0] ? 'ON' : 'OFF';
+    $('#virtual-do-state').textContent = dout[0] ? 'ON' : 'OFF';
+    $('#virtual-lamp-state').textContent = dout[0] ? 'ON' : 'OFF';
+    $('#virtual-button-toggle').classList.toggle('is-pressed', di[0]);
   }
   $('#di-grid').addEventListener('click', event => {
     const button = event.target.closest('[data-di]'); if (!button || ioMode !== 'demo') return;
-    const i = Number(button.dataset.di); di[i] = !di[i]; renderIO();
+    const i = Number(button.dataset.di); di[i] = !di[i]; if (i === 0) dout[0] = di[0]; renderIO();
   });
   $('#do-grid').addEventListener('click', async event => {
     const button = event.target.closest('[data-do]'); if (!button) return;
@@ -148,14 +142,20 @@
     }
     dout[i] = next; renderIO();
   });
-  $$('.mode-button').forEach(button => button.addEventListener('click', () => {
-    if (button.dataset.mode === 'hardware' && !serialPort) {
-      $('#usb-note').textContent = 'Connect the board over USB first. Hardware mode requires companion firmware that reports DI/DO state and accepts output commands.';
-      return;
-    }
-    ioMode = button.dataset.mode; renderIO();
-  }));
-  renderIO();
+  $('#virtual-button-toggle').addEventListener('click', () => {
+    if (guideMode !== 'virtual') return;
+    di[0] = !di[0]; dout[0] = di[0]; renderIO();
+  });
+  $('#virtual-io-reset').addEventListener('click', () => {
+    if (guideMode !== 'virtual') return;
+    di = Array(8).fill(false); dout = Array(8).fill(false); renderIO();
+    window.dispatchEvent(new CustomEvent('localio:reset'));
+  });
+  window.addEventListener('localio:toggle', () => {
+    if (guideMode !== 'virtual') return;
+    di[0] = !di[0]; dout[0] = di[0]; renderIO();
+  });
+  setGuideMode('virtual');
 
   function processSerialLine(line) {
     const clean = line.trim(); if (!clean) return;
@@ -181,7 +181,7 @@
       $('#serial-status').textContent = 'CONNECTED'; $('#usb-connect').disabled = true; $('#usb-disconnect').disabled = false;
       $('#usb-note').textContent = 'USB serial connected at 115200 baud. The device firmware must support the web bridge protocol for live I/O updates.';
       logSerial('USB serial connected. Waiting for device messages…');
-      ioMode = 'hardware'; renderIO();
+      setGuideMode('hardware'); ioMode = 'hardware'; renderIO();
       await serialWriter.write(new TextEncoder().encode('{"cmd":"get_state"}\n'));
       readLoopActive = true;
       const decoder = new TextDecoder();
@@ -208,59 +208,17 @@
     try { if (serialWriter) { serialWriter.releaseLock(); serialWriter = null; } } catch (_) {}
     try { if (serialPort) await serialPort.close(); } catch (_) {}
     serialPort = null; serialReader = null;
-    $('#connection-state').classList.remove('connected'); $('#connection-state').innerHTML = '<i></i> DEMO MODE';
+    $('#connection-state').classList.remove('connected'); $('#connection-state').innerHTML = guideMode === 'hardware' ? '<i></i> HARDWARE NOT CONNECTED' : '<i></i> VIRTUAL MODE';
     $('#serial-status').textContent = 'DISCONNECTED'; $('#usb-connect').disabled = false; $('#usb-disconnect').disabled = true;
-    ioMode = 'demo'; renderIO();
-    if (updateNote) $('#usb-note').textContent = 'USB disconnected. Demo mode is active.';
+    ioMode = guideMode === 'hardware' ? 'hardware' : 'demo'; renderIO();
+    if (updateNote) $('#usb-note').textContent = guideMode === 'hardware' ? 'USB disconnected. Hardware mode is selected, but the board is not connected.' : 'USB disconnected. Virtual mode is active.';
   }
   $('#usb-connect').addEventListener('click', connectSerial);
   $('#usb-disconnect').addEventListener('click', () => disconnectSerial(true));
 
-  // Lessons 2-6 from the reference learning sequence, adapted to this industrial board.
-  let currentLesson = 0;
-  const lessonIndex = $('#lesson-index');
-  lessonIndex.innerHTML = `<div class="lesson-index-title">LEARNING PATH · LESSONS 2–6</div>${lessons.map((lesson,i)=>`<button data-lesson="${i}" class="${i===0?'active':''}"><span class="lesson-num">${lesson.id}</span><span><strong>${lesson.title}</strong><small>${lesson.subtitle}</small></span></button>`).join('')}`;
-
-  function lessonDemo(lesson) {
-    if (lesson.demo === 'leds') return `<div class="lesson-demo"><p class="eyebrow">OUTPUT PREVIEW</p><h3>Two outputs, alternating</h3><div class="demo-led-row"><i class="demo-led" id="lesson-led-1"></i><i class="demo-led" id="lesson-led-2"></i></div><button class="demo-button" data-demo-action="alternate">Run sequence</button><p id="lesson-demo-note">Try the two simulated indicators.</p></div>`;
-    if (lesson.demo === 'reed') return `<div class="lesson-demo"><p class="eyebrow">INPUT PREVIEW</p><h3>Fridge door contact</h3><button class="demo-button" data-demo-action="reed">Toggle reed switch</button><p id="lesson-demo-note">Door closed · DI1 inactive</p><div class="demo-led-row"><i class="demo-led" id="lesson-alarm-led"></i></div></div>`;
-    if (lesson.demo === 'wifi') return `<div class="lesson-demo"><p class="eyebrow">NETWORK PREVIEW</p><h3>Choose a connection mode</h3><div class="demo-led-row"><button class="demo-button" data-demo-action="ap">Access Point</button><button class="demo-button" data-demo-action="sta">Station</button></div><p id="lesson-demo-note">Select a mode to see how the board connects.</p></div>`;
-    if (lesson.demo === 'buzzer') return `<div class="lesson-demo"><p class="eyebrow">BUZZER PREVIEW</p><h3>Onboard alert</h3><div class="demo-led-row"><i class="demo-led" id="lesson-buzzer-led"></i></div><button class="demo-button" data-demo-action="buzzer">Trigger alert pattern</button><p id="lesson-demo-note">The preview animates the buzzer state; actual sound requires lesson firmware.</p></div>`;
-    return `<div class="lesson-demo"><p class="eyebrow">INPUT PREVIEW</p><h3>Eight-button mini piano</h3><div class="piano-keys">${Array.from({length:8},(_,i)=>`<button class="demo-button piano-key" data-note="${i}">${i+1}</button>`).join('')}</div><p id="lesson-demo-note">Press a key to hear a simple browser tone. Hardware version uses DI1–DI8 and the onboard buzzer.</p></div>`;
-  }
-
-  function renderLesson(index) {
-    currentLesson = Math.max(0, Math.min(lessons.length - 1, index));
-    const lesson = lessons[currentLesson];
-    $$('.lesson-index button').forEach(btn => btn.classList.toggle('active', Number(btn.dataset.lesson) === currentLesson));
-    $('#lesson-view').innerHTML = `<p class="eyebrow">LESSON ${lesson.id} · ADAPTED FOR WAVESHARE 8DI / 8DO</p><h2>${lesson.title}</h2><p class="lesson-intro">${lesson.intro}</p><div class="lesson-body-grid"><div class="lesson-section"><h3>What you'll learn</h3><p>${lesson.concept}</p><h3>Steps</h3><ul>${lesson.steps.map(step=>`<li>${step}</li>`).join('')}</ul><div class="info-callout"><strong>Board-specific note:</strong> ${lesson.note}</div></div>${lessonDemo(lesson)}</div><div class="lesson-footer"><small>Lesson ${currentLesson+1} of ${lessons.length} · Original lesson theme: “${lesson.original}”</small><div><button id="lesson-prev" ${currentLesson===0?'disabled':''}>← Previous</button> <button class="primary" id="lesson-next">${currentLesson===lessons.length-1?'Finish':'Next lesson →'}</button></div></div>`;
-    $('#lesson-prev').addEventListener('click', () => renderLesson(currentLesson - 1));
-    $('#lesson-next').addEventListener('click', () => renderLesson(currentLesson === lessons.length - 1 ? 0 : currentLesson + 1));
-  }
-  lessonIndex.addEventListener('click', event => { const btn = event.target.closest('[data-lesson]'); if (btn) renderLesson(Number(btn.dataset.lesson)); });
-  $('#lesson-view').addEventListener('click', event => {
-    const action = event.target.closest('[data-demo-action]')?.dataset.demoAction;
-    if (action === 'alternate') {
-      const a = $('#lesson-led-1'); const b = $('#lesson-led-2'); let count = 0;
-      const timer = setInterval(() => { a.classList.toggle('lit', count % 2 === 0); b.classList.toggle('lit', count % 2 === 1); count++; if (count >= 8) clearInterval(timer); }, 420);
-      $('#lesson-demo-note').textContent = 'DO1 and DO2 are alternating in this browser preview.';
-    }
-    if (action === 'reed') {
-      const on = !$('#lesson-alarm-led').classList.contains('lit'); $('#lesson-alarm-led').classList.toggle('lit', on); $('#lesson-demo-note').textContent = on ? 'Door open · DI1 active · alert output requested.' : 'Door closed · DI1 inactive.';
-    }
-    if (action === 'ap') $('#lesson-demo-note').textContent = 'AP mode: the board creates a Wi-Fi hotspot. Your laptop connects directly to it.';
-    if (action === 'sta') $('#lesson-demo-note').textContent = 'STA mode: the board joins the lab router. Your laptop and board share the same network.';
-    if (action === 'buzzer') {
-      const led = $('#lesson-buzzer-led'); led.classList.add('lit'); $('#lesson-demo-note').textContent = 'Alert pattern preview active. The real board uses its onboard buzzer.'; setTimeout(()=>led.classList.remove('lit'),1800);
-    }
-  });
-  $('#lesson-view').addEventListener('click', event => {
-    const key = event.target.closest('[data-note]'); if (!key) return;
-    const frequencies = [262,294,330,349,392,440,494,523];
-    try { const AudioCtx = window.AudioContext || window.webkitAudioContext; const ctx = new AudioCtx(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type='sine'; osc.frequency.value=frequencies[Number(key.dataset.note)]; gain.gain.value=0.06; osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime+0.22); osc.onended=()=>ctx.close(); } catch (_) {}
-    key.style.background = '#eaf4ff'; setTimeout(()=>key.style.background='',220);
-  });
-  renderLesson(0);
+  // Hands-on Projects: exact source Lessons 2–6 will be imported after their titles/content are verified.
+  $('#lesson-index').innerHTML = '<div class="lesson-index-title">REFERENCE COURSE · LESSONS 2–6</div><div class="lesson-pending"><strong>Five source lessons</strong><p>Ready to be adapted into Waveshare projects once the original lesson titles and instructions are confirmed.</p><a href="https://nani2905-ap.github.io/esp32-s3-waveshare/learn-esp32-s3/" target="_blank" rel="noreferrer">Open original learning website ↗</a></div>';
+  $('#lesson-view').innerHTML = '<p class="eyebrow">SOURCE LESSONS 2–6</p><h2>Hands-on Projects</h2><p class="lesson-intro">This section is separate from the Integration Guide. I need the actual Lessons 2–6 content from your specified reference site before inserting the projects, so that I do not substitute lessons from a different ESP32 website.</p><div class="lesson-section"><h3>How the projects will work</h3><ul><li>Preserve the original lesson title, learning goal and teaching sequence.</li><li>Adapt hardware steps to the Waveshare 8DI/8DO interfaces only where appropriate.</li><li>Give each project a virtual 3D exercise for visitors without hardware and a physical workflow for board owners.</li></ul><div class="info-callout"><strong>Needed to finish this section:</strong> screenshots of the reference website’s Lessons tab showing Lessons 2–6, or screenshots of each lesson opened. The public page loads its lesson details dynamically, and the lesson text is not available in the page content I can retrieve.</div></div>';
 
   const initial = location.hash.replace('#',''); showView(initial || 'home');
 })();
