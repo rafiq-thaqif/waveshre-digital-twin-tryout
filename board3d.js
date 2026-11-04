@@ -432,3 +432,5 @@ function createViewer(host) {
 }
 
 document.querySelectorAll('.three-host').forEach(createViewer);
+
+export { createBoardModel };
