@@ -29,8 +29,8 @@
     <nav class="main-nav" id="main-nav">
       <button class="nav-link active" data-nav="home">Home</button>
       <button class="nav-link" data-nav="meet">Meet the Board</button>
-      <button class="nav-link" data-nav="guide">Guide</button>
-      <button class="nav-link" data-nav="lessons">Lessons</button>
+      <button class="nav-link" data-nav="guide">Integration Guide</button>
+      <button class="nav-link" data-nav="lessons">Hands-on Projects</button>
       <button class="nav-link" data-nav="reference">Reference</button>
     </nav>
   </header>
@@ -64,8 +64,8 @@
         <div class="bottom-heading"><p class="eyebrow">Start here</p><h2>One board. Three ways to learn.</h2></div>
         <div class="entry-grid">
           <button class="entry-card" data-nav="meet"><span class="entry-number">01</span><strong>Meet the Board</strong><p>Explore the physical components in a detailed 3D model.</p><span class="entry-arrow">Explore ↗</span></button>
-          <button class="entry-card" data-nav="guide"><span class="entry-number">02</span><strong>Guide</strong><p>Wire the local I/O, connect the device and learn its network modes.</p><span class="entry-arrow">Start guide ↗</span></button>
-          <button class="entry-card" data-nav="lessons"><span class="entry-number">03</span><strong>Lessons</strong><p>Build practical examples using the board's real interfaces.</p><span class="entry-arrow">View lessons ↗</span></button>
+          <button class="entry-card" data-nav="guide"><span class="entry-number">02</span><strong>Integration Guide</strong><p>Learn the local I/O, connect the device and understand its network modes.</p><span class="entry-arrow">Start guide ↗</span></button>
+          <button class="entry-card" data-nav="lessons"><span class="entry-number">03</span><strong>Hands-on Projects</strong><p>Apply what you learn through guided projects from the reference course.</p><span class="entry-arrow">View lessons ↗</span></button>
         </div>
       </div>
     </section>
@@ -99,8 +99,16 @@
     <!-- GUIDE -->
     <section class="view" id="view-guide">
       <div class="shell page-heading guide-heading">
-        <div><p class="eyebrow">From wiring to connectivity</p><h1>Guide</h1><p>A practical walkthrough for setting up and using the controller. The 3D board stays with you as you work through each section.</p></div>
+        <div><p class="eyebrow">From wiring to connectivity</p><h1>Integration Guide</h1><p>Choose a virtual walkthrough if you are learning without hardware, or switch to the physical workflow when you have the Waveshare in front of you.</p></div>
         <div class="guide-model-card card"><div class="guide-model-title">Board reference</div><div class="three-host guide-host" id="guide-model" data-viewer="guide" aria-label="Small three dimensional model of the Waveshare controller"></div></div>
+      </div>
+
+      <div class="shell guide-mode-bar card">
+        <div class="guide-mode-copy"><strong>How are you learning today?</strong><small>Switch between a no-hardware simulation and instructions for a physical Waveshare.</small></div>
+        <div class="guide-mode-switch" role="group" aria-label="Learning mode">
+          <button class="guide-mode-button active" data-guide-mode="virtual"><span>◈</span> Explore virtually</button>
+          <button class="guide-mode-button" data-guide-mode="hardware"><span>▣</span> I have the board</button>
+        </div>
       </div>
 
       <div class="shell guide-tabs" role="tablist" aria-label="Guide sections">
@@ -113,7 +121,27 @@
       <div class="shell guide-content">
         <!-- LOCAL I/O -->
         <div class="guide-pane active" id="guide-local">
-          <div class="guide-intro-row"><div><p class="eyebrow">Practical 01</p><h2>Local I/O Control</h2><p>Connect a push button to DI1 and an indicator lamp to DO1. Then install the lesson firmware and observe how the input controls the output.</p></div><div class="lesson-chip">DI1 → DO1</div></div>
+          <div class="guide-intro-row"><div><p class="eyebrow">Practical 01</p><h2>Local I/O Control</h2><p>Learn the complete DI1-to-DO1 sequence in a 3D simulation, or switch to the physical workflow if you have the controller.</p></div><div class="lesson-chip">DI1 → DO1</div></div>
+          <div class="guide-mode-panel virtual-mode-panel" id="local-virtual-panel">
+            <div class="local-virtual-layout">
+              <div class="card local-virtual-stage-card">
+                <div class="card-heading"><div><p class="eyebrow">3D interactive exercise</p><h3>Wire it, press it, see it work</h3><p class="small-muted">The virtual board, push button, 24 V supply and indicator lamp are all simulated in this browser.</p></div><span class="step-count">VIRTUAL LAB</span></div>
+                <div id="local-io-3d" class="local-io-3d" aria-label="Three dimensional virtual wiring simulation with Waveshare controller, push button, power supply and lamp"></div>
+                <div class="local-io-controls">
+                  <button class="button primary" id="virtual-button-toggle" aria-pressed="false">Press virtual button</button>
+                  <button class="button secondary" id="virtual-io-reset">Reset exercise</button>
+                  <div class="virtual-io-states"><span>DI1 <b id="virtual-di-state">OFF</b></span><span>DO1 <b id="virtual-do-state">OFF</b></span><span>Lamp <b id="virtual-lamp-state">OFF</b></span></div>
+                </div>
+              </div>
+              <aside class="card virtual-lesson-card">
+                <p class="eyebrow">What is happening?</p><h3>DI1 controls DO1</h3>
+                <ol class="clean-steps"><li>Press the virtual push button.</li><li>The simulated DI1 input changes to ON.</li><li>The example program reads DI1 and commands DO1 ON.</li><li>The indicator lamp lights up.</li></ol>
+                <div class="info-callout">This is a logic and wiring simulation. It does not send electrical signals to a physical board.</div>
+              </aside>
+            </div>
+          </div>
+
+          <div class="guide-mode-panel hardware-mode-panel" id="local-hardware-panel" hidden>
           <div class="local-grid">
             <div class="card wiring-card">
               <div class="card-heading"><div><p class="eyebrow">Wiring reference</p><h3>Push button + tower lamp</h3></div><span class="step-count">01 / 03</span></div>
@@ -159,9 +187,10 @@
               <div class="serial-console"><div class="console-head"><span></span><span></span><span></span><b>SERIAL MONITOR</b><small id="serial-status">DISCONNECTED</small></div><pre id="serial-log">Waiting for USB connection…</pre></div>
             </div>
           </div>
+          </div>
 
           <div class="card io-card">
-            <div class="card-heading io-heading"><div><p class="eyebrow">I/O monitor and control</p><h3>Digital channels</h3><p>Demo mode lets you explore the interface. In hardware mode, inputs are read from the board and outputs are commanded from the website.</p></div><div class="mode-switch"><button class="mode-button active" data-mode="demo">Demo</button><button class="mode-button" data-mode="hardware" id="hardware-mode">Hardware</button></div></div>
+            <div class="card-heading io-heading"><div><p class="eyebrow">I/O monitor and control</p><h3>Digital channels</h3><p>Virtual mode simulates the signals. Hardware mode reads real inputs and sends output commands when compatible firmware is installed.</p></div><span class="io-mode-label" id="io-mode-label">VIRTUAL MODE</span></div>
             <div class="io-columns">
               <div><div class="io-column-title"><strong>Digital inputs</strong><span>DI1 – DI8</span><small>Field signals · read-only on real hardware</small></div><div class="io-grid" id="di-grid"></div></div>
               <div><div class="io-column-title"><strong>Digital outputs</strong><span>DO1 – DO8</span><small>Transistor outputs · browser command in hardware mode</small></div><div class="io-grid" id="do-grid"></div></div>
@@ -172,7 +201,10 @@
 
         <!-- AP -->
         <div class="guide-pane" id="guide-ap">
+          <div class="mode-explainer virtual-mode-panel"><strong>Virtual mode:</strong> Explore how the board creates a hotspot and how a laptop joins it. No Wi-Fi device is configured.</div>
+          <div class="mode-explainer hardware-mode-panel" hidden><strong>Hardware mode:</strong> Use the real board's AP firmware, join its Wi-Fi network and open the dashboard at the configured IP address.</div>
           <div class="guide-intro-row"><div><p class="eyebrow">Network mode 01</p><h2>Wi-Fi Access Point</h2><p>In AP mode, the Waveshare board creates its own Wi-Fi network. Your laptop or phone joins that network directly.</p></div><div class="mode-illustration">BOARD <span>→</span> LAPTOP</div></div>
+          <div class="card network-sandbox virtual-mode-panel"><div><p class="eyebrow">Try it virtually</p><h3>Start a simulated access point</h3><p>Click to see the connection sequence. This does not create a real Wi-Fi hotspot.</p></div><button class="button primary" data-network-action="ap">Start virtual AP</button><p class="network-sandbox-status" id="ap-sandbox-status">AP is stopped.</p></div>
           <div class="network-explain-grid">
             <div class="card network-card"><p class="eyebrow">How it works</p><h3>The board becomes the hotspot</h3><div class="network-flow"><div class="network-node board-node">Waveshare<br><small>Wi-Fi AP</small></div><div class="network-arrow">→</div><div class="network-node laptop-node">Laptop / Phone<br><small>Connected to board</small></div></div><p>No office router is required for this direct connection. The board hosts a local web dashboard that you open from the connected device.</p></div>
             <div class="card network-card"><p class="eyebrow">Steps from your integration guide</p><ol class="clean-steps"><li>Flash the AP firmware to the board.</li><li>Set the Wi-Fi SSID and password in the firmware configuration. The password in your guide must be at least 8 characters.</li><li>Connect your laptop to the ESP32 Wi-Fi network.</li><li>Open <code>http://192.168.4.6</code> in your browser.</li></ol><div class="info-callout">The address above is the example shown in your PowerPoint. It can be changed in the firmware configuration.</div></div>
@@ -182,7 +214,10 @@
 
         <!-- STA -->
         <div class="guide-pane" id="guide-sta">
+          <div class="mode-explainer virtual-mode-panel"><strong>Virtual mode:</strong> Walk through a simulated router, board and laptop connection. The example IP address is for learning only.</div>
+          <div class="mode-explainer hardware-mode-panel" hidden><strong>Hardware mode:</strong> Configure the actual board to join your 2.4 GHz network, then use the IP address assigned by your router.</div>
           <div class="guide-intro-row"><div><p class="eyebrow">Network mode 02</p><h2>Wi-Fi Station</h2><p>In STA mode, the board joins an existing Wi-Fi network, just like a laptop or phone.</p></div><div class="mode-illustration">BOARD <span>↔</span> ROUTER</div></div>
+          <div class="card network-sandbox virtual-mode-panel"><div><p class="eyebrow">Try it virtually</p><h3>Join a simulated Wi-Fi network</h3><p>Enter a pretend network name and see how a board obtains an IP address.</p></div><div class="network-sandbox-actions"><input id="sta-demo-ssid" type="text" value="Lab-WiFi-2.4G" aria-label="Simulated Wi-Fi name"><button class="button primary" data-network-action="sta">Connect virtually</button></div><p class="network-sandbox-status" id="sta-sandbox-status">Board is not connected.</p></div>
           <div class="network-explain-grid">
             <div class="card network-card"><p class="eyebrow">How it works</p><h3>Everything joins the same network</h3><div class="network-flow three"><div class="network-node board-node">Waveshare<br><small>Wi-Fi STA</small></div><div class="network-arrow">↔</div><div class="network-node router-node">Wi-Fi Router<br><small>2.4 GHz</small></div><div class="network-arrow">↔</div><div class="network-node laptop-node">Laptop<br><small>Same LAN</small></div></div><p>The router assigns the board an IP address. Your laptop opens the board dashboard using that address.</p></div>
             <div class="card network-card"><p class="eyebrow">Steps from your integration guide</p><ol class="clean-steps"><li>Flash the STA firmware.</li><li>Configure the 2.4 GHz Wi-Fi SSID and password.</li><li>Connect your laptop to the same Wi-Fi network.</li><li>Read the board's IP address from its serial output and open it in a browser.</li></ol><div class="info-callout">The address 192.168.6.70 in your slides is an example, not a guaranteed address.</div></div>
@@ -192,7 +227,10 @@
 
         <!-- MQTT -->
         <div class="guide-pane" id="guide-mqtt">
+          <div class="mode-explainer virtual-mode-panel"><strong>Virtual mode:</strong> Watch example publish and subscribe messages move between a simulated board, broker and Node-RED dashboard.</div>
+          <div class="mode-explainer hardware-mode-panel" hidden><strong>Hardware mode:</strong> Connect the actual board to a reachable MQTT broker and verify the topic names and payloads used by its firmware.</div>
           <div class="guide-intro-row"><div><p class="eyebrow">Network mode 03</p><h2>MQTT & Node-RED</h2><p>MQTT is a messaging system. It lets the Waveshare board and a dashboard exchange information through a broker.</p></div><div class="mode-illustration">PUBLISH <span>↔</span> SUBSCRIBE</div></div>
+          <div class="card network-sandbox virtual-mode-panel"><div><p class="eyebrow">Try it virtually</p><h3>Send a sample MQTT message</h3><p>Simulate a DI1 status message going to a broker and appearing in Node-RED.</p></div><button class="button primary" data-network-action="mqtt">Publish DI1 = ON</button><p class="network-sandbox-status" id="mqtt-sandbox-status">Waiting for a message.</p></div>
           <div class="card mqtt-flow-card"><div class="mqtt-flow"><div class="mqtt-node">Waveshare board<small>Publishes DI states<br>Subscribes to DO commands</small></div><div class="mqtt-arrow">→</div><div class="mqtt-node broker"><strong>MQTT Broker</strong><small>Message middleman<br>Aedes / Mosquitto</small></div><div class="mqtt-arrow">→</div><div class="mqtt-node dashboard"><strong>Node-RED</strong><small>Dashboard, logic<br>and control buttons</small></div></div></div>
           <div class="network-explain-grid">
             <div class="card network-card"><p class="eyebrow">Simple explanation</p><h3>Think of the broker as a post office</h3><p>The board sends a message such as “DI1 is ON” to the broker. Node-RED subscribes to that topic and receives it. When you press a Node-RED button, it publishes a command such as “DO1 ON”; the board receives that command and changes the output.</p><p>Publish means send a message. Subscribe means listen for messages on a topic.</p></div>
@@ -205,7 +243,8 @@
 
     <!-- LESSONS -->
     <section class="view" id="view-lessons">
-      <div class="shell page-heading"><div><p class="eyebrow">Interactive learning path</p><h1>Lessons</h1><p>Lessons 2–6 from your reference concept, adapted to the Waveshare controller's industrial I/O and onboard features.</p></div><div class="lesson-count">05 <span>LESSONS</span></div></div>
+      <div class="shell page-heading"><div><p class="eyebrow">Interactive learning path</p><h1>Hands-on Projects</h1><p>Practical projects based on Lessons 2–6 from the reference learning website. The project content will be matched to that source, then adapted to the Waveshare where required.</p></div><div class="lesson-count">05 <span>PROJECTS</span></div></div>
+      <div class="shell lessons-source-note"><strong>Source note:</strong> The reference site loads its lesson details dynamically, and I can currently verify its navigation shell but not the full text of Lessons 2–6. The project cards below are a working draft until the exact lesson titles and objectives are confirmed from screenshots or exported content.</div>
       <div class="shell lessons-layout">
         <aside class="lesson-index card" id="lesson-index"></aside>
         <article class="lesson-view card" id="lesson-view"></article>
@@ -219,7 +258,7 @@
         <a class="reference-item card" href="https://docs.waveshare.com/ESP32-S3-POE-ETH-8DI-8DO" target="_blank" rel="noreferrer"><span class="reference-icon">↗</span><div><strong>Waveshare official product documentation</strong><p>Hardware features, interface details, GPIO mapping and specifications.</p></div></a>
         <a class="reference-item card" href="https://docs.waveshare.com/ESP32-S3-POE-ETH-8DI-8DO/Resources-And-Documents" target="_blank" rel="noreferrer"><span class="reference-icon">↗</span><div><strong>Waveshare demo package</strong><p>Official example code, libraries and firmware resources.</p></div></a>
         <a class="reference-item card" href="https://docs.waveshare.com/ESP32-S3-POE-ETH-8DI-8DO/Firmware-Flashing" target="_blank" rel="noreferrer"><span class="reference-icon">↗</span><div><strong>Firmware flashing guide</strong><p>Waveshare's current notes for flashing the factory test firmware.</p></div></a>
-        <a class="reference-item card" href="https://nani2905-ap.github.io/esp32-s3-waveshare/learn-esp32-s3/" target="_blank" rel="noreferrer"><span class="reference-icon">↗</span><div><strong>Reference learning website</strong><p>Original interactive lesson concept. Lessons 2–6 are adapted here for the 8DI/8DO hardware.</p></div></a>
+        <a class="reference-item card" href="https://nani2905-ap.github.io/esp32-s3-waveshare/learn-esp32-s3/" target="_blank" rel="noreferrer"><span class="reference-icon">↗</span><div><strong>Original Hands-on Projects source</strong><p>The requested source for Lessons 2–6. Its lesson details will be transferred after the original content is verified.</p></div></a>
         <div class="card reference-caveat"><strong>Hardware note</strong><p>This is an educational representation. The board's DO channels are optocoupler-isolated transistor outputs, not relay contacts. Confirm wiring, load ratings and supply requirements against the official documentation before connecting real equipment.</p></div>
       </div>
     </section>
@@ -227,6 +266,7 @@
 
   <footer class="site-footer shell"><span>Waveshare ESP32-S3-POE-ETH-8DI-8DO</span><span>Educational digital twin · Built for learning</span></footer>
   <script type="module" src="board3d.js"></script>
+  <script type="module" src="local-io3d.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>
